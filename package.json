@@ -1,0 +1,29 @@
+{
+  "name": "kosmtik-deploy",
+  "version": "0.0.1",
+  "description": "Deploy your local Kosmtik project on a remote server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kosmtik/kosmtik-deploy.git"
+  },
+  "keywords": [
+    "kosmtik",
+    "ssh",
+    "deploy",
+    "publish"
+  ],
+  "author": "Yohan Boniface",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/kosmtik/kosmtik-deploy/issues"
+  },
+  "homepage": "https://github.com/kosmtik/kosmtik-deploy",
+  "dependencies": {
+    "ssh2": "^0.3.6"
+  },
+  "kosmtik": "~0.0.7"
+}
