@@ -66,3 +66,6 @@ exports.LocalConfig = function (localizer, project) {
 
 ```
 
+## Issues and feature requests
+
+Please report any issue or feature request on the [main kosmtik repository](https://github.com/kosmtik/kosmtik/issues)
