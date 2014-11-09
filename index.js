@@ -119,7 +119,11 @@ Deploy.prototype.ssh = function (project, options) {
             if (ext === '.zip') return out();
             if (f.indexOf('.') === 0) return out();
             for (var i = 0; i < options.ignore.length; i++) {
-                if (f.indexOf(options.ignore[i]) === 0) return out();
+                try {
+                    if (f.match(options.ignore[i])) return out();
+                } catch (err) {
+                    if (f.indexOf(options.ignore[i]) === 0) return out();
+                }
             }
             return false;
         },

@@ -32,7 +32,7 @@ using the `deploy` key. For example:
     "username": "foo",
     "password": "123456",
     "root": "xxx/yyyy/zzz",  // remote root where to scp your project
-    "ignore": ['this/dir', 'this/file.txt']  // paths to be ignored
+    "ignore": ['this/dir', 'this/file.txt']  // paths to be ignored, can be regex
 }
 ```
 
