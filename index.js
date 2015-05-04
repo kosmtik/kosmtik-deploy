@@ -30,7 +30,7 @@ var Deploy = function (config) {
         default: null,
         help: 'Password to use for ssh connection.'
     });
-    this.config.commands.deploy.option('xmlName', {
+    this.config.commands.deploy.option('xml', {
         default: 'project.xml',
         full: 'mapnik-xml-name',
         help: 'Name of the mapnik xml that will be exported and deployed.'
@@ -50,11 +50,12 @@ var Deploy = function (config) {
 Deploy.prototype.handleCommand = function () {
     var project = new Project(this.config, this.config.parsed_opts.project),
         self = this,
-        xmlPath = path.join(project.root, this.config.parsed_opts.xmlName),
         callback = function (err, buffer) {
+            var options = project.mml.deploy || {},
+                xmlPath = path.join(project.root, options.xml || this.config.parsed_opts.xml);
             fs.writeFile(xmlPath, buffer, function done () {
                 log('Exported project to', xmlPath);
-                self.deploy(project);
+                self.deploy(project, options);
             });
         };
     project.when('loaded', function () {
@@ -63,10 +64,9 @@ Deploy.prototype.handleCommand = function () {
     project.load();
 };
 
-Deploy.prototype.deploy = function (project) {
+Deploy.prototype.deploy = function (project, options) {
     log('Deploying project', project.id);
-    var options = project.mml.deploy || {},
-        keys = ['host', 'port', 'username', 'password', 'root', 'dry'];
+    var keys = ['host', 'port', 'username', 'password', 'root', 'dry'];
     keys.forEach(function (key) {
         if (this.config.parsed_opts[key]) {
             options[key] = this.config.parsed_opts[key];

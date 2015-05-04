@@ -1,6 +1,6 @@
 {
   "name": "kosmtik-deploy",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Deploy your local Kosmtik project on a remote server",
   "main": "index.js",
   "scripts": {
@@ -25,5 +25,5 @@
   "dependencies": {
     "ssh2": "^0.3.6"
   },
-  "kosmtik": "~0.0.7"
+  "kosmtik": "~0.0.10"
 }
