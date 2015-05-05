@@ -52,7 +52,7 @@ Deploy.prototype.handleCommand = function () {
         self = this,
         callback = function (err, buffer) {
             var options = project.mml.deploy || {},
-                xmlPath = path.join(project.root, options.xml || this.config.parsed_opts.xml);
+                xmlPath = path.join(project.root, options.xml || self.config.parsed_opts.xml);
             fs.writeFile(xmlPath, buffer, function done () {
                 log('Exported project to', xmlPath);
                 self.deploy(project, options);
