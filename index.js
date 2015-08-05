@@ -1,3 +1,4 @@
+/*eslint no-use-before-define: 0 */
 var path = require('path'),
     fs = require('fs'),
     ssh = require('ssh2'),
@@ -51,7 +52,8 @@ Deploy.prototype.handleCommand = function () {
     var project = new Project(this.config, this.config.parsed_opts.project),
         self = this,
         callback = function (err, buffer) {
-            var options = project.mml.deploy || {},
+            if (err) throw err;
+            var options = project.mml.deploy || {},
                 xmlPath = path.join(project.root, options.xml || self.config.parsed_opts.xml);
             fs.writeFile(xmlPath, buffer, function done () {
                 log('Exported project to', xmlPath);
@@ -74,8 +76,8 @@ Deploy.prototype.deploy = function (project, options) {
     }, this);
     options.username = options.username || process.env.USER;
     options.ignore = options.ignore || [];
-    options.protocol = options.protocol || 'ssh';
-    options.privateKeyPath = options.privateKeyPath || path.join(process.env.HOME, '.ssh/id_rsa');
+    options.protocol = options.protocol || 'ssh';
+    options.privateKeyPath = options.privateKeyPath || path.join(process.env.HOME, '.ssh/id_rsa');
     if (!options.password && !options.privateKey && fs.existsSync(options.privateKeyPath)) options.privateKey = fs.readFileSync(options.privateKeyPath);
 
     if (options.protocol === 'ssh') return this.ssh(project, options);
@@ -90,6 +92,7 @@ Deploy.prototype.ssh = function (project, options) {
             var remote = path.join(options.root, local);
             local = path.join(project.root, local);
             sftp.stat(remote, function (err, stats) {
+                if (err) throw err;
                 if (stats) {
                     var localStats = fs.statSync(local);
                     if (stats.size === localStats.size && stats.mtime * 1000 >= localStats.mtime.getTime()) {
