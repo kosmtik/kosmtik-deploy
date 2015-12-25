@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/kosmtik/kosmtik-deploy",
   "dependencies": {
-    "ssh2": "^0.3.6"
+    "ssh2": "^0.4.13"
   },
   "kosmtik": "~0.0.10"
 }
