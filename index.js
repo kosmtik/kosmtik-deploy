@@ -117,15 +117,14 @@ Deploy.prototype.ssh = function (project, options) {
             });
         },
         filter = function (f) {
-            var out = function () {return !log('Filtered out', f, 'SKIPPING');},
-                ext = path.extname(f);
-            if (ext === '.zip') return out();
-            if (f.indexOf('.') === 0) return out();
+            var ext = path.extname(f);
+            if (ext === '.zip') return true;
+            if (f.indexOf('.') === 0) return true;
             for (var i = 0; i < options.ignore.length; i++) {
                 try {
-                    if (f.match(options.ignore[i])) return out();
+                    if (f.match(options.ignore[i])) return true;
                 } catch (err) {
-                    if (f.indexOf(options.ignore[i]) === 0) return out();
+                    if (f.indexOf(options.ignore[i]) === 0) return true;
                 }
             }
             return false;
@@ -140,11 +139,11 @@ Deploy.prototype.ssh = function (project, options) {
             if (err) return end(err.message);
             if(processed === files.length) return end();
             var f = files[processed++];
-            log('Processing', f.path, f.stat.size);
             var local = f.path.replace(project.root, '').replace(/^\//, '');
-            if (filter(local)) loop();
+            if (filter(local)) return loop();
             else if (f.stat.isDirectory()) mkdirs(local);
             else put(local);
+            log('Processing', f.path, f.stat.size);
         };
     c.on('ready', function () {
         log('Connection established with', options.host);
