@@ -92,7 +92,7 @@ Deploy.prototype.ssh = function (project, options) {
             var remote = path.join(options.root, local);
             local = path.join(project.root, local);
             sftp.stat(remote, function (err, stats) {
-                if (err) throw err;
+                if (err && err.type !== 'NO_SUCH_FILE') throw err;
                 if (stats) {
                     var localStats = fs.statSync(local);
                     if (stats.size === localStats.size && stats.mtime * 1000 >= localStats.mtime.getTime()) {
