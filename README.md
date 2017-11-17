@@ -1,17 +1,17 @@
-# Kosmtik-deploy
+# Kosmtik-deploy
 
 Deploy your Kosmtik project on a remote server. Only SSH supported for now.
 
 Experimental, not suited for production use.
 
 
-## Install
+## Install
 
 While in your kosmtik root, type:
 
 `node index.js plugins --install kosmtik-deploy`
 
-## Usage
+## Usage
 
 Only command line for now. Eg.:
 ```
@@ -33,6 +33,7 @@ using the `deploy` key. For example:
     "password": "123456",
     "root": "xxx/yyyy/zzz",  // remote root where to scp your project
     "ignore": ['this/dir', 'this/file.txt']  // paths to be ignored, can be regex,
+    "include": ['this/dir', 'this/file.txt']  // paths of files and dirs to be included (default to project root)
     "xml": "mapnik.xml"  // Name of the created Mapnik XML
 }
 ```

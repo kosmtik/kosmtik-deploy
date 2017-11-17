@@ -84,12 +84,25 @@ Deploy.prototype.deploy = function (project, options) {
     else log('ERROR: unknown protocol', options.protocol);
 };
 
+
+Deploy.prototype.getFiles = function (project, paths) {
+    paths = paths || [''];
+    var files = [], filepath;
+    for (var i = 0; i < paths.length; i++) {
+        filepath = path.join(project.root, paths[i]);
+        if (fs.lstatSync(filepath).isDirectory()) files = files.concat(Utils.tree(filepath));
+        else files.push({path: filepath, stat: fs.statSync(filepath)});
+    }
+    return files;
+};
+
 Deploy.prototype.ssh = function (project, options) {
     var c = new ssh(), sftp,
         processed = 0,
-        files = Utils.tree(project.root),
+        files = this.getFiles(project, options.include),
         put = function (local) {
-            var remote = path.join(options.root, local);
+            var remote = path.join(options.root, local),
+                remoteDir = path.dirname(local);
             local = path.join(project.root, local);
             sftp.stat(remote, function (err, stats) {
                 // https://github.com/mscdex/ssh2-streams/blob/master/lib/sftp.js#L41
@@ -101,19 +114,19 @@ Deploy.prototype.ssh = function (project, options) {
                         return loop();
                     }
                 }
-                if (options.dry) loop();
-                else sftp.fastPut(local, remote, {}, loop);
+                if (options.dry) return loop();
+                mkdirs(remoteDir);
+                sftp.fastPut(local, remote, {}, loop);
             });
         },
         mkdirs = function (local) {
             var remote = path.join(options.root, local);
             local = path.join(project.root, local);
-            if (options.dry) return loop();
+            if (options.dry) return;
             c.exec('mkdir -p ' + remote, function (err, stream) {
                 if (err) return log(err.message);
                 stream.on('exit', function(code/*, *signal*/) {
                     if (code !== 0) throw new Error('Unable to create dir ' + remote);
-                    loop();
                 });
             });
         },
@@ -131,8 +144,9 @@ Deploy.prototype.ssh = function (project, options) {
             return false;
         },
         end = function (message) {
-            log('Connection closed');
-            if (message) log(message);
+            log('Closing connexion');
+            processed = files.length;  // Make sure we end the loop.
+            if (message) log('Error: ' + message);
             else log('Done.');
             c.end();
         },
@@ -142,7 +156,6 @@ Deploy.prototype.ssh = function (project, options) {
             var f = files[processed++];
             var local = f.path.replace(project.root, '').replace(/^\//, '');
             if (filter(local)) return loop();
-            else if (f.stat.isDirectory()) mkdirs(local);
             else put(local);
             log('Processing', f.path, f.stat.size);
         };
