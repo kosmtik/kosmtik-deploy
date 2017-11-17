@@ -92,7 +92,8 @@ Deploy.prototype.ssh = function (project, options) {
             var remote = path.join(options.root, local);
             local = path.join(project.root, local);
             sftp.stat(remote, function (err, stats) {
-                if (err && err.type !== 'NO_SUCH_FILE') throw err;
+                // https://github.com/mscdex/ssh2-streams/blob/master/lib/sftp.js#L41
+                if (err && err.code !== 2) throw err;  // 2 === No such file or directory, which is normal at first run.
                 if (stats) {
                     var localStats = fs.statSync(local);
                     if (stats.size === localStats.size && stats.mtime * 1000 >= localStats.mtime.getTime()) {
@@ -150,6 +151,7 @@ Deploy.prototype.ssh = function (project, options) {
         c.sftp(function (err, s) {
             if (err) log(err.message);
             sftp = s;
+            mkdirs('/');  // Make sure remote root exists.
             loop();
         });
     });
